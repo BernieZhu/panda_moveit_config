@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<launch>
+
+  <arg name="robot_ip" default="172.16.0.2"/>
+  <arg name="load_gripper" default="true" />
+  <arg name="launch_rviz" default="true" />
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_1" args="0 0 0 0 0 0 base panda_link0" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_world" args="0 0 0 0 0 0 world base" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="camera_dummy" args="1.2 -0.5 0.45 0.98 -2.29 2.70 base rgb_camera_link" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="camera_dummy2" args="1.2 -0.5 0.45 0 0 0 base camera_base" />
+
+  <include file="$(find franka_control)/launch/franka_control.launch" >
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+  </include>
+
+			<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="position_joint_trajectory_controller"/>
+	  	<!--
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="impedance_trajectory_controller"/>
+
+		-->
+   <include file="$(find panda_moveit_config)/launch/move_group.launch">
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+	  	<!--
+			<arg name="impedance_control" value="true" />
+		-->
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/moveit_rviz.launch" if="$(arg launch_rviz)" />
+</launch>

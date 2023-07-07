@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<launch>
+  <!-- If needed, broadcast static tf for robot root -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_1" args="0 0 0 0 0 0 world panda_link0" />
+  <!-- <node pkg="tf" type="static_transform_publisher" name="camera_to_base" args="1.328970676865163 0.6505214115986559 0.6564967678437371 -0.40819000654993387 -0.7037155854113691 0.49072382135651166 0.3120183080448343 panda_link0 camera_depth_optical_frame 100" /> -->
+  <!-- <node pkg="tf" type="static_transform_publisher" name="camera_rgb_to_base" args="1.328970676865163 0.6505214115986559 0.6564967678437371 -0.40819000654993387 -0.7037155854113691 0.49072382135651166 0.3120183080448343 panda_link0 camera_color_optical_frame 100" /> -->
+
+  <arg name="robot_ip" />
+  <arg name="load_gripper" default="true" />
+  <arg name="launch_rviz" default="true" />
+
+  <include file="$(find franka_control)/launch/franka_control.launch" >
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/moveit_rviz.launch" if="$(arg launch_rviz)" />
+</launch>
